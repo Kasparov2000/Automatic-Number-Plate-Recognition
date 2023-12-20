@@ -6,7 +6,7 @@ For a comprehensive overview and demonstration of the ANPR system, please watch 
 
 ## ANPR Web Application
 
-Explore the ANPR system with YOLOv5 through the interactive [ANPR Web App](https://drive.google.com/file/d/1CqWvu2isHOfhMvXQ2Ig3Rc4sncIBHSpS/view?usp=sharing). The web app provides a user-friendly interface for license plate detection and recognition.
+Explore the ANPR system with YOLOv5 through the interactive [ANPR Web App](https://anpr-web-app-v46pf9hiuickkuqnym8mmo.streamlit.app/). The web app provides a user-friendly interface for license plate detection and recognition.
 
 ## YOLOv5 Integration
 
