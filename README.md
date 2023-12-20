@@ -2,7 +2,7 @@
 
 ## Video Presentation
 
-For a comprehensive overview and demonstration of the ANPR system, please watch the [ANPR System Video Presentation](https://drive.google.com/file/d/1IN02u-d14NFR4ilAd04kvPvO12O7Ic1R/view?usp=sharing).
+For a comprehensive overview and demonstration of the ANPR system, please watch the [ANPR System Video Presentation](https://drive.google.com/file/d/1CqWvu2isHOfhMvXQ2Ig3Rc4sncIBHSpS/view?usp=sharing).
 
 ## ANPR Web Application
 
