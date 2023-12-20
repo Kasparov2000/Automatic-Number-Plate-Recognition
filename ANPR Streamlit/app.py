@@ -23,20 +23,9 @@ INPUT_HEIGHT = 640
 # Global variable for the result image
 result_image = None
 
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-def extract_text(image, bbox):
-    x, y, w, h = bbox
-    roi = image[y:y + h, x:x + w]
-
-    if 0 in roi.shape:
-        return 'no number'
-    else:
-        text = pt.image_to_string(roi)
-        text = text.strip()
-        return text
 
 
 def is_license_plate(confidence, class_score):
@@ -121,20 +110,37 @@ def drawings(image, boxes_np, confidences_np, index):
     return image, license_text
 
 
+def extract_text(image, bbox):
+    x, y, w, h = bbox
+    roi = image[y:y + h, x:x + w]
+
+    if 0 in roi.shape:
+        return 'no number'
+    else:
+        text = pt.image_to_string(roi)
+        text = text.strip()
+        return text
+
+
 def yolo_predictions(img, net):
     global result_image
 
-    # step-1: detections
-    input_image, detections = get_detections(img, net)
-    # step-2: NMS
-    boxes_np, confidences_np, index = non_maximum_suppression(input_image, detections)
-    # step-3: Drawings
-    result_img, license_text = drawings(img, boxes_np, confidences_np, index)
+    try:
+        # step-1: detections
+        input_image, detections = get_detections(img, net)
+        # step-2: NMS
+        boxes_np, confidences_np, index = non_maximum_suppression(input_image, detections)
+        # step-3: Drawings
+        result_img, license_text = drawings(img, boxes_np, confidences_np, index)
 
-    # Save the result image
-    result_image = result_img
+        # Save the result image
+        result_image = result_img
 
-    return license_text
+        return license_text
+
+    except Exception as e:
+        st.error(f"An error occurred during processing: {str(e)}")
+        return None
 
 
 def main():
@@ -142,19 +148,28 @@ def main():
 
     uploaded_file = st.file_uploader("Choose a file", type=['png', 'jpg', 'jpeg', 'gif'])
 
-    if uploaded_file is not None:
-        # Read the image from BytesIO
-        img = io.imread(uploaded_file)
-
-        filename = secrets.token_hex(8)
-        license_text = yolo_predictions(img, net)
-
-        if 'irrelevant' in license_text.lower():
-            st.image(result_image, caption="License Plate Image", use_column_width=True)
-            st.error("Irrelevant Object Detected")
+    if uploaded_file is None:
+        st.warning("Please upload a file.")
+    else:
+        file_extension = uploaded_file.name.rsplit('.', 1)[1].lower()
+        if not allowed_file(uploaded_file.name):
+            st.error(f"Invalid file format. Allowed formats: {', '.join(ALLOWED_EXTENSIONS)}")
         else:
-            st.image(result_image, caption="License Plate Image", use_column_width=True)
-            st.success(f"License Plate Number: {license_text}")
+            # Continue processing the image
+            img = io.imread(uploaded_file)
+            license_text = yolo_predictions(img, net)
+            print(license_text)
+
+            if license_text is not None and license_text != "":
+                if 'irrelevant' in license_text.lower():
+                    st.image(result_image, caption="License Plate Image", use_column_width=True)
+                    st.error("Irrelevant Object Detected")
+                else:
+                    st.image(result_image, caption="License Plate Image", use_column_width=True)
+                    st.success(f"License Plate Number: {license_text}")
+            else:
+                st.image(result_image, caption="Error", use_column_width=True, width=50)
+                st.error("Error: No license plate information detected.")
 
 
 if __name__ == '__main__':
